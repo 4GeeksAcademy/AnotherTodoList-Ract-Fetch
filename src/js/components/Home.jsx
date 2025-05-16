@@ -1,27 +1,47 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import ToDoList from "./ToDoList";
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
-
-//create your first component
 const Home = () => {
-	return (
-		<div className="text-center">
-            
+	const [userIn, setUserIn] = useState("");
 
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
+	const postToDo = async (user) => {
+		try {
+			const response = await fetch("https://playground.4geeks.com/todo/users/" + user, {
+				method: "POST",
+			});
+			if (!response.ok)
+				throw new Error(response.statusText);
+			else {
+			let dataJson = await response.json();
+			console.log(dataJson);
+			if(dataJson.datail === "User already exists." || dataJson.name === user )
+			setUserIn(user);
+			}
+		} catch (error) {
+			console.log('Looks like there was a problem: \n', error);
+		}
+	}
+
+	return (
+		<>
+		<div className="box">
+			{ userIn.length > 0 ?
+				( 	<>
+						<span>Usuario:&nbsp;<strong>{userIn.length > 0 && userIn}</strong>  </span>
+						<button onClick={ () => setUserIn("")}>Salir</button>
+				</>	) :
+				<input id = "userIn" type = "text" className=""
+				placeholder = "Introduce un usuario"
+				onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.target.value.trim() !== '') {
+							postToDo(e.target.value.trim());
+                            e.target.value = '';
+            }}}
+				/>
+			}
 		</div>
+		{userIn.length > 0 && <ToDoList shareUser = {userIn}/> }
+		</>
 	);
 };
 
