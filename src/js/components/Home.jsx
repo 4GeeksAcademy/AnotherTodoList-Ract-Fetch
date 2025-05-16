@@ -4,30 +4,23 @@ import ToDoList from "./ToDoList";
 const Home = () => {
 	const [userIn, setUserIn] = useState("");
 
-	const postToDo = async (user) => {
-		try {
-			const response = await fetch("https://playground.4geeks.com/todo/users/" + user, {
+	const postToDo = async (input) => {
+			const response = await fetch("https://playground.4geeks.com/todo/users/" + input, {
 				method: "POST",
 			});
-			if (!response.ok)
-				throw new Error(response.statusText);
-			else {
-			let dataJson = await response.json();
+		let dataJson = await response.json();
 			console.log(dataJson);
-			if(dataJson.datail === "User already exists." || dataJson.name === user )
-			setUserIn(user);
-			}
-		} catch (error) {
-			console.log('Looks like there was a problem: \n', error);
-		}
-	}
+			if(dataJson.detail === "User already exists." || dataJson.name === input )
+			setUserIn(input);
+	}	// try...catch no es necesario porque cuando el usuario existe, ocurre un error 400 y la API devuelve
+		// un mensaje que lo confirma. Si el usuario no existe, lo crea. Mientras la URL esté bien escrita, la API es funcional.
 
 	return (
 		<>
 		<div className="box">
 			{ userIn.length > 0 ?
 				( 	<>
-						<span>Usuario:&nbsp;<strong>{userIn.length > 0 && userIn}</strong>  </span>
+						<span>Usuario:&nbsp;<strong>{userIn}</strong>  </span>
 						<button onClick={ () => setUserIn("")}>Salir</button>
 				</>	) :
 				<input id = "userIn" type = "text" className=""
